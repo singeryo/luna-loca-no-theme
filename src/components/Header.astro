@@ -1,70 +1,60 @@
 ---
 import { navLinks, site } from '../data/site';
+import { resolveSectionHref } from '../lib/nav';
+import AccentBar from './AccentBar.astro';
 
-const isHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
-
-function resolveHref(href: string) {
-  if (href.startsWith('#') && !isHome) {
-    return `/${href}`;
-  }
-  return href;
-}
+const pathname = Astro.url.pathname;
 ---
 
-<header
-  id="site-header"
-  class="sticky top-0 z-50 border-b border-line/80 bg-paper/90 backdrop-blur-md"
->
-  <div class="container-narrow flex items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-    <a href="/" class="group flex items-center gap-3" aria-label={`${site.name} — Accueil`}>
-      <span
-        class="flex h-9 w-9 items-center justify-center rounded-full bg-ink text-sm font-bold text-paper transition group-hover:bg-accent-red"
-        aria-hidden="true"
+<header id="site-header" class="sticky top-0 z-50 bg-paper">
+  <AccentBar />
+  <div class="border-b border-line">
+    <div class="container-narrow flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+      <a href="/" class="flex items-center gap-3" aria-label={`${site.name} — Accueil`}>
+        <span class="h-2.5 w-2.5 bg-accent-red" aria-hidden="true"></span>
+        <span class="font-display text-[1.7rem] leading-none tracking-tight">{site.name}</span>
+      </a>
+
+      <nav class="hidden items-center gap-8 md:flex" aria-label="Navigation principale">
+        {
+          navLinks.map((link) => (
+            <a
+              href={resolveSectionHref(link.href, pathname)}
+              class={link.emphasis ? 'nav-emphasis' : 'nav-link'}
+              data-nav-link
+            >
+              {link.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      <button
+        type="button"
+        id="menu-toggle"
+        class="inline-flex items-center justify-center border border-ink px-3 py-2 text-sm font-medium md:hidden"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
       >
-        AD
-      </span>
-      <span class="text-sm font-semibold tracking-wide sm:text-base">{site.name}</span>
-    </a>
+        Menu
+      </button>
+    </div>
 
-    <nav class="hidden items-center gap-8 md:flex" aria-label="Navigation principale">
-      {
-        navLinks.map((link) => (
-          <a
-            href={resolveHref(link.href)}
-            class="text-sm font-medium text-muted transition hover:text-ink"
-            data-nav-link
-          >
-            {link.label}
-          </a>
-        ))
-      }
-    </nav>
-
-    <button
-      type="button"
-      id="menu-toggle"
-      class="inline-flex items-center justify-center rounded-full border border-line px-3 py-2 text-sm font-medium text-ink md:hidden"
-      aria-expanded="false"
-      aria-controls="mobile-menu"
-    >
-      Menu
-    </button>
-  </div>
-
-  <div id="mobile-menu" class="hidden border-t border-line md:hidden" hidden>
-    <nav class="container-narrow flex flex-col gap-1 px-4 py-3 sm:px-6" aria-label="Navigation mobile">
-      {
-        navLinks.map((link) => (
-          <a
-            href={resolveHref(link.href)}
-            class="rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-line/60"
-            data-nav-link
-          >
-            {link.label}
-          </a>
-        ))
-      }
-    </nav>
+    <div id="mobile-menu" class="border-t border-line md:hidden" hidden>
+      <nav class="container-narrow flex flex-col gap-1 px-4 py-4 sm:px-6" aria-label="Navigation mobile">
+        {
+          navLinks.map((link) => (
+            <a
+              href={resolveSectionHref(link.href, pathname)}
+              class:list={[link.emphasis ? 'nav-emphasis mt-2 text-center' : 'nav-link px-1 py-2.5']}
+              data-nav-link
+            >
+              {link.label}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
   </div>
 </header>
 
@@ -75,16 +65,53 @@ function resolveHref(href: string) {
   function setMenuOpen(open: boolean) {
     if (!toggle || !menu) return;
     toggle.setAttribute('aria-expanded', String(open));
+    toggle.textContent = open ? 'Fermer' : 'Menu';
     menu.hidden = !open;
-    menu.classList.toggle('hidden', !open);
   }
 
   toggle?.addEventListener('click', () => {
-    const isOpen = toggle.getAttribute('aria-expanded') === 'true';
-    setMenuOpen(!isOpen);
+    setMenuOpen(toggle.getAttribute('aria-expanded') !== 'true');
   });
 
   document.querySelectorAll('[data-nav-link]').forEach((link) => {
     link.addEventListener('click', () => setMenuOpen(false));
   });
+
+  const desktop = window.matchMedia('(min-width: 768px)');
+  desktop.addEventListener('change', (event) => {
+    if (event.matches) setMenuOpen(false);
+  });
+
+  const pairs = [...document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]')].flatMap(
+    (link) => {
+      const id = (link.getAttribute('href') ?? '').split('#')[1];
+      const section = id ? document.getElementById(id) : null;
+      return section ? [{ link, section }] : [];
+    },
+  );
+
+  if (pairs.length === 0) {
+    // Pages intérieures : pas de section à suivre.
+  } else {
+    const seen = new Set<Element>();
+    const sections = pairs
+      .map((pair) => pair.section)
+      .filter((section) => (seen.has(section) ? false : seen.add(section)));
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (!visible) return;
+
+        pairs.forEach(({ link, section }) => {
+          link.classList.toggle('nav-active', section === visible.target);
+        });
+      },
+      { rootMargin: '-45% 0px -45% 0px', threshold: [0, 0.25, 0.5] },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+  }
 </script>
