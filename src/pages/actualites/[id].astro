@@ -1,9 +1,7 @@
 ---
 import { render } from 'astro:content';
-import Footer from '../../components/Footer.astro';
-import Header from '../../components/Header.astro';
 import Button from '../../components/ui/Button.astro';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageLayout from '../../layouts/PageLayout.astro';
 import { formatNewsDate, getPublishedNews } from '../../lib/news';
 
 export async function getStaticPaths() {
@@ -18,46 +16,42 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 ---
 
-<BaseLayout title={entry.data.title} description={entry.data.description}>
-  <Header />
-  <main>
-    <article class="section-pad">
-      <div class="container-narrow max-w-3xl">
-        <Button href="/actualites/" variant="ghost" class="mb-8 px-0">
-          ← Toutes les actualités
-        </Button>
+<PageLayout title={entry.data.title} description={entry.data.description}>
+  <article class="section-pad">
+    <div class="container-narrow max-w-3xl">
+      <Button href="/actualites/" variant="ghost" class="mb-10">
+        ← Toutes les actualités
+      </Button>
 
-        <header class="mb-8 border-b border-line pb-8">
-          <time
-            datetime={entry.data.pubDate.toISOString()}
-            class="text-xs font-semibold uppercase tracking-[0.16em] text-accent-blue"
-          >
-            {formatNewsDate(entry.data.pubDate)}
-          </time>
-          <h1 class="mt-4 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
-            {entry.data.title}
-          </h1>
-          <p class="mt-4 text-lg leading-relaxed text-muted">{entry.data.description}</p>
-        </header>
-
-        {
-          entry.data.image && (
-            <img
-              src={entry.data.image}
-              alt={entry.data.imageAlt ?? ''}
-              class="mb-10 aspect-[16/9] w-full rounded-2xl object-cover"
-              loading="eager"
-            />
-          )
-        }
-
-        <div
-          class="prose prose-neutral max-w-none prose-headings:tracking-tight prose-a:text-accent-blue prose-strong:text-ink"
+      <header class="border-b border-ink pb-8">
+        <time
+          datetime={entry.data.pubDate.toISOString()}
+          class="text-xs font-medium uppercase tracking-[0.18em] text-accent-blue"
         >
-          <Content />
-        </div>
+          {formatNewsDate(entry.data.pubDate)}
+        </time>
+        <h1 class="mt-4 font-display text-4xl leading-[1.05] text-ink sm:text-6xl">
+          {entry.data.title}
+        </h1>
+        <p class="mt-5 text-lg leading-relaxed text-muted">{entry.data.description}</p>
+      </header>
+
+      {
+        entry.data.image && (
+          <img
+            src={entry.data.image}
+            alt={entry.data.imageAlt ?? ''}
+            class="mt-10 aspect-[16/9] w-full object-cover"
+            loading="eager"
+          />
+        )
+      }
+
+      <div
+        class="prose prose-neutral mt-10 max-w-none prose-headings:font-display prose-headings:font-normal prose-a:text-accent-blue prose-strong:text-ink"
+      >
+        <Content />
       </div>
-    </article>
-  </main>
-  <Footer />
-</BaseLayout>
+    </div>
+  </article>
+</PageLayout>

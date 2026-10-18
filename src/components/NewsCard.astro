@@ -1,6 +1,6 @@
 ---
 import type { NewsEntry } from '../lib/news';
-import { formatNewsDate } from '../lib/news';
+import { formatNewsDate, newsDateParts } from '../lib/news';
 
 interface Props {
   entry: NewsEntry;
@@ -9,49 +9,58 @@ interface Props {
 
 const { entry, featured = false } = Astro.props;
 const href = `/actualites/${entry.id}/`;
+const parts = newsDateParts(entry.data.pubDate);
 ---
 
-<article
-  class:list={[
-    'group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-white transition hover:border-ink/30 hover:shadow-sm',
-    featured && 'sm:flex-row',
-  ]}
->
+<article class="border-t border-ink">
   {
-    entry.data.image && (
-      <a
-        href={href}
-        class:list={[
-          'block overflow-hidden bg-ink/5',
-          featured ? 'sm:w-2/5' : 'aspect-[16/10]',
-        ]}
-      >
-        <img
-          src={entry.data.image}
-          alt={entry.data.imageAlt ?? ''}
-          class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-          loading="lazy"
-        />
+    featured ? (
+      <div class="grid md:grid-cols-12">
+        <a href={href} class="relative block min-h-56 bg-ink text-paper md:col-span-4">
+          {entry.data.image ? (
+            <img
+              src={entry.data.image}
+              alt={entry.data.imageAlt ?? ''}
+              class="absolute inset-0 h-full w-full object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <span class="flex h-full min-h-56 flex-col justify-between p-6">
+              <span class="text-xs font-medium uppercase tracking-[0.22em] text-accent-red">À la une</span>
+              <span>
+                <span class="block font-display text-6xl leading-none">{parts.day}</span>
+                <span class="mt-3 block capitalize text-paper/80">
+                  {parts.month} {parts.year}
+                </span>
+              </span>
+            </span>
+          )}
+        </a>
+        <div class="flex flex-col justify-center py-8 md:col-span-8 md:border-l md:border-ink md:px-10 md:py-12">
+          <h3 class="font-display text-3xl leading-tight text-ink sm:text-4xl">
+            <a href={href} class="transition-colors hover:text-accent-red">
+              {entry.data.title}
+            </a>
+          </h3>
+          <p class="mt-4 max-w-xl text-base leading-relaxed text-muted">{entry.data.description}</p>
+          <a href={href} class="mt-6 inline-flex items-center gap-2 text-sm font-medium text-ink hover:text-accent-red">
+            Lire la suite <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    ) : (
+      <a href={href} class="group grid gap-2 py-6 sm:grid-cols-12 sm:items-baseline sm:gap-6">
+        <time
+          datetime={entry.data.pubDate.toISOString()}
+          class="text-sm capitalize text-muted sm:col-span-3"
+        >
+          {formatNewsDate(entry.data.pubDate)}
+        </time>
+        <h3 class="font-display text-2xl leading-tight text-ink transition-colors group-hover:text-accent-red sm:col-span-5">
+          {entry.data.title}
+        </h3>
+        <p class="text-sm leading-relaxed text-muted sm:col-span-4">{entry.data.description}</p>
       </a>
     )
   }
-
-  <div class:list={['flex flex-1 flex-col p-5 sm:p-6', featured && 'sm:w-3/5']}>
-    <time datetime={entry.data.pubDate.toISOString()} class="text-xs font-semibold uppercase tracking-[0.16em] text-accent-blue">
-      {formatNewsDate(entry.data.pubDate)}
-    </time>
-    <h3 class="mt-3 text-xl font-bold tracking-tight text-ink">
-      <a href={href} class="transition hover:text-accent-red">{entry.data.title}</a>
-    </h3>
-    <p class="mt-3 flex-1 text-sm leading-relaxed text-muted sm:text-base">
-      {entry.data.description}
-    </p>
-    <a
-      href={href}
-      class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-ink transition group-hover:text-accent-red"
-    >
-      Lire la suite
-      <span aria-hidden="true">→</span>
-    </a>
-  </div>
 </article>

@@ -4,108 +4,84 @@ import Button from './ui/Button.astro';
 import SectionHeading from './ui/SectionHeading.astro';
 
 const contactEmail = site.email;
+const endpoint = site.formEndpoint;
+const fieldClass =
+  'mt-2 w-full border-0 border-b border-ink/25 bg-transparent px-0 py-3 text-base text-ink outline-none transition-colors focus:border-accent-blue';
 ---
 
-<section id="contact" class="section-pad bg-paper" aria-labelledby="contact-title">
-  <div class="container-narrow grid gap-12 lg:grid-cols-12 lg:gap-16">
+<section id="contact" class="section-pad" aria-labelledby="contact-title">
+  <div class="container-narrow grid gap-14 lg:grid-cols-12 lg:gap-16">
     <div class="lg:col-span-5">
       <SectionHeading
         id="contact-title"
         eyebrow="Contact"
         title="Écrivez-nous"
-        description="Une question sur les cours, une inscription, un partenariat ? Laissez-nous un message."
+        description="Une question sur les cours, une inscription, un partenariat : laissez un message."
       />
 
-      <ul class="mt-8 space-y-4 text-sm text-muted sm:text-base">
+      <ul class="mt-10 space-y-6 text-sm sm:text-base">
         <li>
-          <span class="block text-xs font-semibold uppercase tracking-[0.16em] text-ink">Email</span>
-          <a class="mt-1 inline-block hover:text-accent-blue" href={`mailto:${site.email}`}>
-            {site.email}
-          </a>
+          <span class="block text-xs font-medium uppercase tracking-[0.18em] text-accent-blue">Email</span>
+          <a class="mt-1 inline-block hover:text-accent-red" href={`mailto:${site.email}`}>{site.email}</a>
         </li>
         <li>
-          <span class="block text-xs font-semibold uppercase tracking-[0.16em] text-ink">Téléphone</span>
-          <a class="mt-1 inline-block hover:text-accent-blue" href={`tel:${site.phone.replace(/\s+/g, '')}`}>
+          <span class="block text-xs font-medium uppercase tracking-[0.18em] text-accent-blue">Téléphone</span>
+          <a class="mt-1 inline-block hover:text-accent-red" href={`tel:${site.phone.replace(/\s+/g, '')}`}>
             {site.phone}
           </a>
         </li>
         <li>
-          <span class="block text-xs font-semibold uppercase tracking-[0.16em] text-ink">Adresse</span>
-          <p class="mt-1">{site.address}</p>
+          <span class="block text-xs font-medium uppercase tracking-[0.18em] text-accent-blue">Studio</span>
+          <p class="mt-1 text-muted">{site.address}</p>
         </li>
       </ul>
     </div>
 
-    <form
-      class="rounded-2xl border border-line bg-white p-6 shadow-sm sm:p-8 lg:col-span-7"
-      method="POST"
-      action="#"
-      data-contact-form
-    >
-      <div class="grid gap-5 sm:grid-cols-2">
-        <label class="block sm:col-span-1">
-          <span class="mb-2 block text-sm font-medium text-ink">Nom</span>
-          <input
-            type="text"
-            name="name"
-            required
-            autocomplete="name"
-            class="w-full rounded-xl border border-line bg-paper px-4 py-3 text-sm outline-none transition focus:border-accent-blue focus:ring-2 focus:ring-accent-blue/20"
-          />
+    <form class="lg:col-span-7" method="post" action={endpoint || undefined} data-contact-form>
+      <div class="grid gap-6 sm:grid-cols-2">
+        <label class="block">
+          <span class="text-sm font-medium">Nom</span>
+          <input class={fieldClass} type="text" name="name" required autocomplete="name" />
         </label>
-        <label class="block sm:col-span-1">
-          <span class="mb-2 block text-sm font-medium text-ink">Email</span>
-          <input
-            type="email"
-            name="email"
-            required
-            autocomplete="email"
-            class="w-full rounded-xl border border-line bg-paper px-4 py-3 text-sm outline-none transition focus:border-accent-blue focus:ring-2 focus:ring-accent-blue/20"
-          />
+        <label class="block">
+          <span class="text-sm font-medium">Email</span>
+          <input class={fieldClass} type="email" name="email" required autocomplete="email" />
         </label>
         <label class="block sm:col-span-2">
-          <span class="mb-2 block text-sm font-medium text-ink">Sujet</span>
-          <input
-            type="text"
-            name="subject"
-            required
-            class="w-full rounded-xl border border-line bg-paper px-4 py-3 text-sm outline-none transition focus:border-accent-blue focus:ring-2 focus:ring-accent-blue/20"
-          />
+          <span class="text-sm font-medium">Sujet</span>
+          <input class={fieldClass} type="text" name="subject" required />
         </label>
         <label class="block sm:col-span-2">
-          <span class="mb-2 block text-sm font-medium text-ink">Message</span>
-          <textarea
-            name="message"
-            required
-            rows="5"
-            class="w-full resize-y rounded-xl border border-line bg-paper px-4 py-3 text-sm outline-none transition focus:border-accent-blue focus:ring-2 focus:ring-accent-blue/20"
-          ></textarea>
+          <span class="text-sm font-medium">Message</span>
+          <textarea class={`${fieldClass} resize-y`} name="message" required rows="5"></textarea>
         </label>
       </div>
 
-      <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p class="text-xs text-muted">
-          Le formulaire sera branché plus tard (Formspree, Cloudflare, etc.). Pour l’instant, il
-          ouvre votre client mail.
-        </p>
+      <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        {
+          endpoint ? (
+            <p class="text-sm text-muted">Nous répondons en général sous quelques jours.</p>
+          ) : (
+            <p class="max-w-sm text-sm text-muted">
+              Le formulaire ouvre votre messagerie. Il pourra ensuite envoyer le message directement.
+            </p>
+          )
+        }
         <Button type="submit" variant="primary">Envoyer</Button>
       </div>
 
-      <p
-        class="mt-4 hidden rounded-xl border border-accent-blue/20 bg-accent-blue/5 px-4 py-3 text-sm text-accent-blue"
-        data-form-status
-        role="status"
-      ></p>
+      <p class="mt-5 hidden text-sm text-accent-blue" data-form-status role="status"></p>
     </form>
   </div>
 </section>
 
-<script define:vars={{ contactEmail }}>
+<script define:vars={{ contactEmail, endpoint }}>
   const form = document.querySelector('[data-contact-form]');
   const status = document.querySelector('[data-form-status]');
 
-  form?.addEventListener('submit', (event) => {
+  form?.addEventListener('submit', async (event) => {
     event.preventDefault();
+    if (!(form instanceof HTMLFormElement)) return;
 
     const data = new FormData(form);
     const name = String(data.get('name') ?? '').trim();
@@ -113,14 +89,30 @@ const contactEmail = site.email;
     const subject = String(data.get('subject') ?? '').trim();
     const message = String(data.get('message') ?? '').trim();
 
-    const body = [`Nom : ${name}`, `Email : ${email}`, '', message].join('\n');
-    const mailto = `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-    window.location.href = mailto;
-
-    if (status) {
-      status.textContent = 'Votre client mail va s’ouvrir avec le message prérempli.';
+    const showStatus = (text: string) => {
+      if (!status) return;
+      status.textContent = text;
       status.classList.remove('hidden');
+    };
+
+    if (endpoint) {
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ name, email, subject, message }),
+        });
+        if (!response.ok) throw new Error('Request failed');
+        form.reset();
+        showStatus('Message envoyé. Nous vous répondrons bientôt.');
+      } catch {
+        showStatus('L’envoi a échoué. Écrivez-nous directement par email.');
+      }
+      return;
     }
+
+    const body = [`Nom : ${name}`, `Email : ${email}`, '', message].join('\n');
+    window.location.href = `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    showStatus('Votre messagerie va s’ouvrir avec le message.');
   });
 </script>

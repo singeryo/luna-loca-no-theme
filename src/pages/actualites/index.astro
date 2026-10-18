@@ -1,49 +1,43 @@
 ---
-import Footer from '../../components/Footer.astro';
-import Header from '../../components/Header.astro';
 import NewsCard from '../../components/NewsCard.astro';
 import Button from '../../components/ui/Button.astro';
 import SectionHeading from '../../components/ui/SectionHeading.astro';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageLayout from '../../layouts/PageLayout.astro';
 import { getPublishedNews } from '../../lib/news';
 
 const entries = await getPublishedNews();
 ---
 
-<BaseLayout
+<PageLayout
   title="Actualités"
   description="Historique des actualités de l’association : cours, spectacles et événements."
 >
-  <Header />
-  <main>
-    <section class="section-pad">
-      <div class="container-narrow">
-        <div class="mb-10 flex flex-col gap-6 sm:mb-12 sm:flex-row sm:items-end sm:justify-between">
-          <SectionHeading
-            eyebrow="Archives"
-            title="Toutes les actualités"
-            description="L’historique complet des annonces publiées par l’association."
-          />
-          <Button href="/#actualites" variant="secondary" class="shrink-0 self-start sm:self-auto">
-            Retour à l’accueil
-          </Button>
-        </div>
-
-        {
-          entries.length === 0 ? (
-            <p class="rounded-2xl border border-dashed border-line px-6 py-10 text-center text-muted">
-              Aucune actualité pour le moment.
-            </p>
-          ) : (
-            <div class="grid gap-6 md:grid-cols-2">
-              {entries.map((entry) => (
-                <NewsCard entry={entry} />
-              ))}
-            </div>
-          )
-        }
+  <section class="section-pad">
+    <div class="container-narrow">
+      <div class="mb-12 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <SectionHeading
+          eyebrow="Archives"
+          title="Toutes les actualités"
+          description="L’historique des annonces publiées par l’association."
+        />
+        <Button href="/" variant="secondary" class="shrink-0 self-start sm:self-auto">
+          Retour à l’accueil
+        </Button>
       </div>
-    </section>
-  </main>
-  <Footer />
-</BaseLayout>
+
+      {
+        entries.length === 0 ? (
+          <p class="border border-dashed border-line px-6 py-12 text-center text-muted">
+            Aucune actualité pour le moment.
+          </p>
+        ) : (
+          <div class="border-b border-ink">
+            {entries.map((entry) => (
+              <NewsCard entry={entry} />
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </section>
+</PageLayout>

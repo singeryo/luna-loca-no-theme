@@ -1,44 +1,52 @@
 ---
-import { site } from '../data/site';
+import { classes, site } from '../data/site';
 import SectionHeading from './ui/SectionHeading.astro';
 ---
 
-<section id="a-propos" class="section-pad bg-paper" aria-labelledby="about-title">
-  <div class="container-narrow grid gap-12 lg:grid-cols-12 lg:gap-16">
-    <div class="lg:col-span-5">
-      <SectionHeading
-        id="about-title"
-        eyebrow="Association"
-        title="Qui sommes-nous"
-        description="Un collectif engagé pour rendre la danse accessible, exigeante et joyeuse."
-      />
+<section id="a-propos" class="section-pad" aria-labelledby="about-title">
+  <div class="container-narrow">
+    <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-5">
+        <SectionHeading
+          id="about-title"
+          eyebrow="Association"
+          title="Qui sommes-nous"
+        />
+      </div>
+      <div class="space-y-5 text-base leading-relaxed text-muted sm:text-lg lg:col-span-7">
+        <p>
+          {site.name} est une association à but non lucratif. Nous proposons des cours réguliers
+          pour enfants, adolescents et adultes, et quelques événements publics chaque année.
+        </p>
+        <p>
+          L’idée est simple : un studio où l’on progresse ensemble, où l’on ose, et où la scène
+          reste un moment de partage plutôt qu’une vitrine.
+        </p>
+      </div>
     </div>
 
-    <div class="space-y-6 text-base leading-relaxed text-muted sm:text-lg lg:col-span-7">
-      <p>
-        {site.name} est une association à but non lucratif. Nous proposons des cours réguliers
-        pour enfants, adolescents et adultes, ainsi que quelques événements publics chaque année :
-        spectacles, portes ouvertes et rencontres artistiques.
-      </p>
-      <p>
-        Notre ambition est simple : créer un lieu de pratique bienveillant, où l’on progresse
-        ensemble, où l’on ose, et où la scène reste un espace de partage.
-      </p>
+    <div class="mt-16 border-t border-ink pt-8">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <h3 class="font-display text-3xl leading-none sm:text-4xl">Les cours</h3>
+        <p class="max-w-sm text-sm leading-relaxed text-muted">
+          Horaires indicatifs. Écrivez-nous pour le détail de la saison et une séance d’essai.
+        </p>
+      </div>
 
-      <dl class="grid gap-4 sm:grid-cols-3">
-        <div class="rounded-2xl border border-line bg-white p-5">
-          <dt class="text-xs font-semibold uppercase tracking-[0.18em] text-accent-blue">Cours</dt>
-          <dd class="mt-2 text-2xl font-bold text-ink">Toute l’année</dd>
-        </div>
-        <div class="rounded-2xl border border-line bg-white p-5">
-          <dt class="text-xs font-semibold uppercase tracking-[0.18em] text-accent-red">Événements</dt>
-          <dd class="mt-2 text-2xl font-bold text-ink">Quelques fois / an</dd>
-        </div>
-        <div class="rounded-2xl border border-line bg-white p-5">
-          <dt class="text-xs font-semibold uppercase tracking-[0.18em] text-ink">Public</dt>
-          <dd class="mt-2 text-2xl font-bold text-ink">Tous âges</dd>
-        </div>
-      </dl>
+      <ul class="mt-8 border-t border-line">
+        {
+          classes.map((item) => (
+            <li class="grid gap-1 border-b border-line py-5 sm:grid-cols-12 sm:items-baseline sm:gap-6">
+              <span class="font-display text-2xl text-ink sm:col-span-4">{item.name}</span>
+              <span class="text-muted sm:col-span-4">{item.audience}</span>
+              <span class="inline-flex items-center gap-3 sm:col-span-4 sm:justify-end">
+                <span class="h-1.5 w-1.5 shrink-0 bg-accent-blue" aria-hidden="true" />
+                {item.schedule}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </div>
 </section>

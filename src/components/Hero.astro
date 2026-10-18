@@ -1,73 +1,80 @@
 ---
 import { heroSlides } from '../data/site';
+import Button from './ui/Button.astro';
+import Motif from './Motif.astro';
+
+const total = String(heroSlides.length).padStart(2, '0');
 ---
 
-<section id="accueil" class="relative overflow-hidden bg-ink text-paper" aria-label="Présentation">
-  <div class="relative min-h-[70vh] sm:min-h-[78vh]">
+<section id="accueil" class="relative bg-ink text-paper" aria-roledescription="carrousel" aria-label="Présentation">
+  <div class="relative min-h-[calc(100svh-4.25rem)]">
     {
       heroSlides.map((slide, index) => (
         <article
           class:list={[
-            'absolute inset-0 transition-opacity duration-700',
-            index === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none',
+            'absolute inset-0',
+            slide.tone === 'light' ? 'bg-paper text-ink' : 'bg-ink text-paper',
           ]}
           data-hero-slide
+          data-active={index === 0 || undefined}
           aria-hidden={index === 0 ? 'false' : 'true'}
+          inert={index === 0 ? undefined : true}
         >
-          <img
-            src={slide.image}
-            alt={slide.alt}
-            class="h-full w-full object-cover"
-            loading={index === 0 ? 'eager' : 'lazy'}
-          />
-          <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-ink/25" />
-          <div class="absolute inset-0 flex items-end">
-            <div class="container-narrow section-pad w-full pb-20 pt-24 sm:pb-24">
-              <p class="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-accent-red">
-                {slide.id}
+          <div class="container-narrow flex h-full flex-col px-4 sm:flex-row sm:items-stretch sm:px-6 lg:px-8">
+            <div class="order-2 flex flex-1 flex-col justify-end pb-28 pt-6 sm:order-1 sm:py-16 sm:pr-10">
+              <p class="text-xs font-medium uppercase tracking-[0.28em] text-accent-red">{slide.kicker}</p>
+              {index === 0 ? (
+                <h1 class="mt-4 max-w-xl font-display text-[2.7rem] leading-[0.95] sm:text-6xl lg:text-7xl">
+                  {slide.title}
+                </h1>
+              ) : (
+                <h2 class="mt-4 max-w-xl font-display text-[2.7rem] leading-[0.95] sm:text-6xl lg:text-7xl">
+                  {slide.title}
+                </h2>
+              )}
+              <p
+                class:list={[
+                  'mt-5 max-w-md text-base leading-relaxed sm:text-lg',
+                  slide.tone === 'light' ? 'text-muted' : 'text-paper/80',
+                ]}
+              >
+                {slide.subtitle}
               </p>
-              <h1 class="max-w-3xl text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-                {slide.title}
-              </h1>
-              <p class="mt-4 max-w-xl text-base text-paper/85 sm:text-lg">{slide.subtitle}</p>
+              <div class="mt-8">
+                <Button href={slide.cta.href} variant={slide.tone === 'light' ? 'primary' : 'invert'}>
+                  {slide.cta.label}
+                </Button>
+              </div>
+            </div>
+            <div class="order-1 h-40 w-full sm:order-2 sm:h-auto sm:w-[42%] sm:py-8">
+              <Motif name={slide.motif} />
             </div>
           </div>
         </article>
       ))
     }
 
-    <div class="absolute bottom-6 left-0 right-0 z-10">
-      <div class="container-narrow flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <div class="flex gap-2" role="tablist" aria-label="Diapositives du carrousel">
-          {
-            heroSlides.map((_, index) => (
-              <button
-                type="button"
-                class:list={[
-                  'h-2.5 w-2.5 rounded-full transition',
-                  index === 0 ? 'bg-accent-red' : 'bg-paper/40 hover:bg-paper/70',
-                ]}
-                data-hero-dot
-                aria-label={`Aller à la diapositive ${index + 1}`}
-                aria-selected={index === 0 ? 'true' : 'false'}
-              />
-            ))
-          }
+    <div class="absolute inset-x-0 bottom-0 z-20 border-t border-paper/15 bg-ink text-paper">
+      <div class="container-narrow flex items-center gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <p class="shrink-0 font-display text-2xl leading-none tabular-nums">
+          <span data-hero-index>01</span>
+          <span class="text-paper/40"> / {total}</span>
+        </p>
+        <div class="h-px flex-1 bg-paper/20" aria-hidden="true">
+          <div data-hero-progress class="h-px bg-accent-red" style={`width: ${100 / heroSlides.length}%`}></div>
         </div>
-        <div class="flex gap-2">
+        <div class="flex shrink-0 gap-2">
           <button
             type="button"
-            id="hero-prev"
-            class="rounded-full border border-paper/30 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-paper hover:border-paper hover:bg-paper/10"
-            aria-label="Diapositive précédente"
+            data-hero-prev
+            class="border border-paper/30 px-3 py-2 text-xs font-medium uppercase tracking-[0.14em] hover:border-paper"
           >
             Préc.
           </button>
           <button
             type="button"
-            id="hero-next"
-            class="rounded-full border border-paper/30 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-paper hover:border-paper hover:bg-paper/10"
-            aria-label="Diapositive suivante"
+            data-hero-next
+            class="border border-paper/30 px-3 py-2 text-xs font-medium uppercase tracking-[0.14em] hover:border-paper"
           >
             Suiv.
           </button>
@@ -77,40 +84,61 @@ import { heroSlides } from '../data/site';
   </div>
 </section>
 
+<style>
+  [data-hero-slide] {
+    opacity: 0;
+    z-index: 0;
+    transition: opacity 700ms ease;
+  }
+
+  [data-hero-slide][data-active] {
+    opacity: 1;
+    z-index: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-hero-slide] {
+      transition: none;
+    }
+  }
+</style>
+
 <script>
-  const slides = Array.from(document.querySelectorAll<HTMLElement>('[data-hero-slide]'));
-  const dots = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-hero-dot]'));
-  const prev = document.getElementById('hero-prev');
-  const next = document.getElementById('hero-next');
+  const root = document.getElementById('accueil');
+  const slides = [...document.querySelectorAll<HTMLElement>('[data-hero-slide]')];
+  const indexLabel = document.querySelector<HTMLElement>('[data-hero-index]');
+  const progress = document.querySelector<HTMLElement>('[data-hero-progress]');
+  const prev = document.querySelector<HTMLButtonElement>('[data-hero-prev]');
+  const next = document.querySelector<HTMLButtonElement>('[data-hero-next]');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   let current = 0;
-  let timer: number | undefined;
+  let timer = 0;
 
   function show(index: number) {
+    if (slides.length === 0) return;
     current = (index + slides.length) % slides.length;
 
     slides.forEach((slide, i) => {
       const active = i === current;
-      slide.classList.toggle('opacity-100', active);
-      slide.classList.toggle('opacity-0', !active);
-      slide.classList.toggle('pointer-events-none', !active);
+      slide.toggleAttribute('data-active', active);
+      slide.toggleAttribute('inert', !active);
       slide.setAttribute('aria-hidden', active ? 'false' : 'true');
     });
 
-    dots.forEach((dot, i) => {
-      const active = i === current;
-      dot.classList.toggle('bg-accent-red', active);
-      dot.classList.toggle('bg-paper/40', !active);
-      dot.setAttribute('aria-selected', active ? 'true' : 'false');
-    });
+    if (indexLabel) indexLabel.textContent = String(current + 1).padStart(2, '0');
+    if (progress) progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+  }
+
+  function stopAutoplay() {
+    window.clearInterval(timer);
+    timer = 0;
   }
 
   function startAutoplay() {
     stopAutoplay();
-    timer = window.setInterval(() => show(current + 1), 6000);
-  }
-
-  function stopAutoplay() {
-    if (timer) window.clearInterval(timer);
+    if (reduceMotion || slides.length < 2) return;
+    timer = window.setInterval(() => show(current + 1), 7000);
   }
 
   prev?.addEventListener('click', () => {
@@ -123,12 +151,15 @@ import { heroSlides } from '../data/site';
     startAutoplay();
   });
 
-  dots.forEach((dot, index) => {
-    dot.addEventListener('click', () => {
-      show(index);
-      startAutoplay();
-    });
+  root?.addEventListener('mouseenter', stopAutoplay);
+  root?.addEventListener('mouseleave', startAutoplay);
+  root?.addEventListener('focusin', stopAutoplay);
+  root?.addEventListener('focusout', startAutoplay);
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stopAutoplay();
+    else startAutoplay();
   });
 
-  if (slides.length > 1) startAutoplay();
+  startAutoplay();
 </script>

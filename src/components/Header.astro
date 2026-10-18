@@ -90,14 +90,12 @@ const pathname = Astro.url.pathname;
     },
   );
 
-  if (pairs.length === 0) {
-    // Pages intérieures : pas de section à suivre.
-  } else {
-    const seen = new Set<Element>();
-    const sections = pairs
-      .map((pair) => pair.section)
-      .filter((section) => (seen.has(section) ? false : seen.add(section)));
+  const seen = new Set<Element>();
+  const sections = pairs
+    .map((pair) => pair.section)
+    .filter((section) => (seen.has(section) ? false : seen.add(section)));
 
+  if (sections.length > 0) {
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries

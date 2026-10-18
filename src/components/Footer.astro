@@ -1,44 +1,44 @@
 ---
 import { navLinks, site } from '../data/site';
+import { resolveSectionHref } from '../lib/nav';
+import AccentBar from './AccentBar.astro';
 
-const isHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
-
-function resolveHref(href: string) {
-  if (href.startsWith('#') && !isHome) {
-    return `/${href}`;
-  }
-  return href;
-}
+const pathname = Astro.url.pathname;
 ---
 
-<footer class="mt-auto border-t border-line bg-ink text-paper">
-  <div class="container-narrow section-pad grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-3 lg:py-14">
-    <div>
-      <p class="text-lg font-bold tracking-tight">{site.name}</p>
-      <p class="mt-3 max-w-sm text-sm leading-relaxed text-paper/70">{site.tagline}</p>
+<footer class="mt-auto bg-ink text-paper">
+  <AccentBar tone="dark" />
+  <div class="container-narrow section-pad grid gap-12 py-14 sm:grid-cols-2 lg:grid-cols-12 lg:py-16">
+    <div class="lg:col-span-5">
+      <p class="font-display text-4xl leading-none">{site.name}</p>
+      <p class="mt-4 max-w-sm text-sm leading-relaxed text-paper/70">{site.description}</p>
     </div>
 
-    <div>
-      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-accent-red">Navigation</p>
+    <div class="lg:col-span-3">
+      <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent-red">Navigation</p>
       <ul class="mt-4 space-y-2 text-sm text-paper/80">
         {
           navLinks.map((link) => (
             <li>
-              <a class="hover:text-paper" href={resolveHref(link.href)}>
+              <a class="hover:text-paper" href={resolveSectionHref(link.href, pathname)}>
                 {link.label}
               </a>
             </li>
           ))
         }
         <li>
-          <a class="hover:text-paper" href="/actualites/">Actualités (historique)</a>
+          <a class="hover:text-paper" href="/actualites/">Toutes les actualités</a>
         </li>
       </ul>
     </div>
 
-    <div>
-      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-accent-blue">Suivez-nous</p>
+    <div class="lg:col-span-4">
+      <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent-blue">Studio</p>
       <ul class="mt-4 space-y-2 text-sm text-paper/80">
+        <li>{site.address}</li>
+        <li>
+          <a class="hover:text-paper" href={`mailto:${site.email}`}>{site.email}</a>
+        </li>
         <li>
           <a class="hover:text-paper" href={site.social.instagram} rel="noopener noreferrer" target="_blank">
             Instagram
@@ -49,9 +49,6 @@ function resolveHref(href: string) {
             Facebook
           </a>
         </li>
-        <li>
-          <a class="hover:text-paper" href={`mailto:${site.email}`}>{site.email}</a>
-        </li>
       </ul>
     </div>
   </div>
@@ -59,7 +56,7 @@ function resolveHref(href: string) {
   <div class="border-t border-paper/10">
     <div class="container-narrow flex flex-col gap-2 px-4 py-5 text-xs text-paper/50 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
       <p>© {new Date().getFullYear()} {site.name}. Association à but non lucratif.</p>
-      <p>Site statique · Astro · Cloudflare</p>
+      <p>{site.tagline}</p>
     </div>
   </div>
 </footer>
