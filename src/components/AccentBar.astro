@@ -1,0 +1,15 @@
+---
+interface Props {
+  tone?: 'light' | 'dark';
+  class?: string;
+}
+
+const { tone = 'light', class: className = '' } = Astro.props;
+const mid = tone === 'dark' ? 'bg-paper' : 'bg-ink';
+---
+
+<div class:list={['flex h-1', className]} aria-hidden="true">
+  <span class="w-2/5 bg-accent-red"></span>
+  <span class:list={['w-2/5', mid]}></span>
+  <span class="w-1/5 bg-accent-blue"></span>
+</div>

@@ -1,0 +1,61 @@
+---
+import type { HeroMotif } from '../data/site';
+
+interface Props {
+  name: HeroMotif;
+}
+
+const { name } = Astro.props;
+---
+
+<svg
+  viewBox="0 0 800 1000"
+  class="h-full w-full"
+  preserveAspectRatio="xMidYMid slice"
+  aria-hidden="true"
+>
+  {
+    name === 'arcs' && (
+      <>
+        <rect width="800" height="1000" fill="var(--color-ink)" />
+        <circle cx="620" cy="280" r="340" fill="none" stroke="var(--color-paper)" stroke-width="1.5" />
+        <circle cx="620" cy="280" r="230" fill="none" stroke="var(--color-accent-red)" stroke-width="14" />
+        <circle cx="620" cy="280" r="92" fill="var(--color-accent-blue)" />
+        <path
+          d="M-20 760C180 560 260 860 820 640"
+          fill="none"
+          stroke="var(--color-paper)"
+          stroke-width="2"
+        />
+        <path
+          d="M40 820C220 640 340 920 780 740"
+          fill="none"
+          stroke="var(--color-paper)"
+          stroke-width="2"
+        />
+      </>
+    )
+  }
+  {
+    name === 'blocks' && (
+      <>
+        <rect width="800" height="1000" fill="var(--color-paper)" />
+        <rect x="70" y="90" width="360" height="520" fill="var(--color-ink)" />
+        <rect x="300" y="460" width="420" height="210" fill="var(--color-accent-red)" />
+        <circle cx="610" cy="210" r="78" fill="var(--color-accent-blue)" />
+        <rect x="70" y="860" width="220" height="10" fill="var(--color-ink)" />
+      </>
+    )
+  }
+  {
+    name === 'orbit' && (
+      <>
+        <rect width="800" height="1000" fill="var(--color-ink)" />
+        <rect width="56" height="1000" fill="var(--color-accent-red)" />
+        <circle cx="470" cy="500" r="280" fill="var(--color-paper)" />
+        <circle cx="470" cy="500" r="168" fill="var(--color-ink)" />
+        <circle cx="470" cy="500" r="42" fill="var(--color-accent-blue)" />
+      </>
+    )
+  }
+</svg>
