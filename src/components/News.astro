@@ -1,0 +1,44 @@
+---
+import { getLatestNews } from '../lib/news';
+import NewsCard from './NewsCard.astro';
+import Button from './ui/Button.astro';
+import SectionHeading from './ui/SectionHeading.astro';
+
+const latest = await getLatestNews(5);
+const [featured, ...rest] = latest;
+---
+
+<section id="actualites" class="section-pad bg-white" aria-labelledby="news-title">
+  <div class="container-narrow">
+    <div class="mb-10 flex flex-col gap-6 sm:mb-12 sm:flex-row sm:items-end sm:justify-between">
+      <SectionHeading
+        id="news-title"
+        eyebrow="Actualités"
+        title="Les dernières nouvelles"
+        description="Spectacles, ateliers, inscriptions… retrouvez ici les infos récentes de l’association."
+      />
+      <Button href="/actualites/" variant="secondary" class="shrink-0 self-start sm:self-auto">
+        Voir tout l’historique
+      </Button>
+    </div>
+
+    {
+      latest.length === 0 ? (
+        <p class="rounded-2xl border border-dashed border-line px-6 py-10 text-center text-muted">
+          Aucune actualité pour le moment.
+        </p>
+      ) : (
+        <div class="grid gap-6">
+          {featured && <NewsCard entry={featured} featured />}
+          {rest.length > 0 && (
+            <div class="grid gap-6 md:grid-cols-2">
+              {rest.map((entry) => (
+                <NewsCard entry={entry} />
+              ))}
+            </div>
+          )}
+        </div>
+      )
+    }
+  </div>
+</section>

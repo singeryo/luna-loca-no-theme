@@ -1,0 +1,57 @@
+---
+import type { NewsEntry } from '../lib/news';
+import { formatNewsDate } from '../lib/news';
+
+interface Props {
+  entry: NewsEntry;
+  featured?: boolean;
+}
+
+const { entry, featured = false } = Astro.props;
+const href = `/actualites/${entry.id}/`;
+---
+
+<article
+  class:list={[
+    'group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-white transition hover:border-ink/30 hover:shadow-sm',
+    featured && 'sm:flex-row',
+  ]}
+>
+  {
+    entry.data.image && (
+      <a
+        href={href}
+        class:list={[
+          'block overflow-hidden bg-ink/5',
+          featured ? 'sm:w-2/5' : 'aspect-[16/10]',
+        ]}
+      >
+        <img
+          src={entry.data.image}
+          alt={entry.data.imageAlt ?? ''}
+          class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+          loading="lazy"
+        />
+      </a>
+    )
+  }
+
+  <div class:list={['flex flex-1 flex-col p-5 sm:p-6', featured && 'sm:w-3/5']}>
+    <time datetime={entry.data.pubDate.toISOString()} class="text-xs font-semibold uppercase tracking-[0.16em] text-accent-blue">
+      {formatNewsDate(entry.data.pubDate)}
+    </time>
+    <h3 class="mt-3 text-xl font-bold tracking-tight text-ink">
+      <a href={href} class="transition hover:text-accent-red">{entry.data.title}</a>
+    </h3>
+    <p class="mt-3 flex-1 text-sm leading-relaxed text-muted sm:text-base">
+      {entry.data.description}
+    </p>
+    <a
+      href={href}
+      class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-ink transition group-hover:text-accent-red"
+    >
+      Lire la suite
+      <span aria-hidden="true">→</span>
+    </a>
+  </div>
+</article>

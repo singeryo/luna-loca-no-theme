@@ -1,0 +1,134 @@
+---
+import { heroSlides } from '../data/site';
+---
+
+<section id="accueil" class="relative overflow-hidden bg-ink text-paper" aria-label="Présentation">
+  <div class="relative min-h-[70vh] sm:min-h-[78vh]">
+    {
+      heroSlides.map((slide, index) => (
+        <article
+          class:list={[
+            'absolute inset-0 transition-opacity duration-700',
+            index === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none',
+          ]}
+          data-hero-slide
+          aria-hidden={index === 0 ? 'false' : 'true'}
+        >
+          <img
+            src={slide.image}
+            alt={slide.alt}
+            class="h-full w-full object-cover"
+            loading={index === 0 ? 'eager' : 'lazy'}
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-ink/25" />
+          <div class="absolute inset-0 flex items-end">
+            <div class="container-narrow section-pad w-full pb-20 pt-24 sm:pb-24">
+              <p class="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-accent-red">
+                {slide.id}
+              </p>
+              <h1 class="max-w-3xl text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+                {slide.title}
+              </h1>
+              <p class="mt-4 max-w-xl text-base text-paper/85 sm:text-lg">{slide.subtitle}</p>
+            </div>
+          </div>
+        </article>
+      ))
+    }
+
+    <div class="absolute bottom-6 left-0 right-0 z-10">
+      <div class="container-narrow flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <div class="flex gap-2" role="tablist" aria-label="Diapositives du carrousel">
+          {
+            heroSlides.map((_, index) => (
+              <button
+                type="button"
+                class:list={[
+                  'h-2.5 w-2.5 rounded-full transition',
+                  index === 0 ? 'bg-accent-red' : 'bg-paper/40 hover:bg-paper/70',
+                ]}
+                data-hero-dot
+                aria-label={`Aller à la diapositive ${index + 1}`}
+                aria-selected={index === 0 ? 'true' : 'false'}
+              />
+            ))
+          }
+        </div>
+        <div class="flex gap-2">
+          <button
+            type="button"
+            id="hero-prev"
+            class="rounded-full border border-paper/30 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-paper hover:border-paper hover:bg-paper/10"
+            aria-label="Diapositive précédente"
+          >
+            Préc.
+          </button>
+          <button
+            type="button"
+            id="hero-next"
+            class="rounded-full border border-paper/30 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-paper hover:border-paper hover:bg-paper/10"
+            aria-label="Diapositive suivante"
+          >
+            Suiv.
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const slides = Array.from(document.querySelectorAll<HTMLElement>('[data-hero-slide]'));
+  const dots = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-hero-dot]'));
+  const prev = document.getElementById('hero-prev');
+  const next = document.getElementById('hero-next');
+  let current = 0;
+  let timer: number | undefined;
+
+  function show(index: number) {
+    current = (index + slides.length) % slides.length;
+
+    slides.forEach((slide, i) => {
+      const active = i === current;
+      slide.classList.toggle('opacity-100', active);
+      slide.classList.toggle('opacity-0', !active);
+      slide.classList.toggle('pointer-events-none', !active);
+      slide.setAttribute('aria-hidden', active ? 'false' : 'true');
+    });
+
+    dots.forEach((dot, i) => {
+      const active = i === current;
+      dot.classList.toggle('bg-accent-red', active);
+      dot.classList.toggle('bg-paper/40', !active);
+      dot.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+  }
+
+  function startAutoplay() {
+    stopAutoplay();
+    timer = window.setInterval(() => show(current + 1), 6000);
+  }
+
+  function stopAutoplay() {
+    if (timer) window.clearInterval(timer);
+  }
+
+  prev?.addEventListener('click', () => {
+    show(current - 1);
+    startAutoplay();
+  });
+
+  next?.addEventListener('click', () => {
+    show(current + 1);
+    startAutoplay();
+  });
+
+  dots.forEach((dot, index) => {
+    dot.addEventListener('click', () => {
+      show(index);
+      startAutoplay();
+    });
+  });
+
+  if (slides.length > 1) startAutoplay();
+</script>

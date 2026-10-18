@@ -1,0 +1,90 @@
+---
+import { navLinks, site } from '../data/site';
+
+const isHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
+
+function resolveHref(href: string) {
+  if (href.startsWith('#') && !isHome) {
+    return `/${href}`;
+  }
+  return href;
+}
+---
+
+<header
+  id="site-header"
+  class="sticky top-0 z-50 border-b border-line/80 bg-paper/90 backdrop-blur-md"
+>
+  <div class="container-narrow flex items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+    <a href="/" class="group flex items-center gap-3" aria-label={`${site.name} — Accueil`}>
+      <span
+        class="flex h-9 w-9 items-center justify-center rounded-full bg-ink text-sm font-bold text-paper transition group-hover:bg-accent-red"
+        aria-hidden="true"
+      >
+        AD
+      </span>
+      <span class="text-sm font-semibold tracking-wide sm:text-base">{site.name}</span>
+    </a>
+
+    <nav class="hidden items-center gap-8 md:flex" aria-label="Navigation principale">
+      {
+        navLinks.map((link) => (
+          <a
+            href={resolveHref(link.href)}
+            class="text-sm font-medium text-muted transition hover:text-ink"
+            data-nav-link
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <button
+      type="button"
+      id="menu-toggle"
+      class="inline-flex items-center justify-center rounded-full border border-line px-3 py-2 text-sm font-medium text-ink md:hidden"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      Menu
+    </button>
+  </div>
+
+  <div id="mobile-menu" class="hidden border-t border-line md:hidden" hidden>
+    <nav class="container-narrow flex flex-col gap-1 px-4 py-3 sm:px-6" aria-label="Navigation mobile">
+      {
+        navLinks.map((link) => (
+          <a
+            href={resolveHref(link.href)}
+            class="rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-line/60"
+            data-nav-link
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+
+  function setMenuOpen(open: boolean) {
+    if (!toggle || !menu) return;
+    toggle.setAttribute('aria-expanded', String(open));
+    menu.hidden = !open;
+    menu.classList.toggle('hidden', !open);
+  }
+
+  toggle?.addEventListener('click', () => {
+    const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+    setMenuOpen(!isOpen);
+  });
+
+  document.querySelectorAll('[data-nav-link]').forEach((link) => {
+    link.addEventListener('click', () => setMenuOpen(false));
+  });
+</script>
