@@ -46,7 +46,9 @@ const pathname = Astro.url.pathname;
           navLinks.map((link) => (
             <a
               href={resolveSectionHref(link.href, pathname)}
-              class:list={[link.emphasis ? 'nav-emphasis mt-2 text-center' : 'nav-link px-1 py-2.5']}
+              class:list={[
+                link.emphasis ? 'nav-emphasis mt-2 text-center' : 'nav-link self-start px-1 py-2.5',
+              ]}
               data-nav-link
             >
               {link.label}

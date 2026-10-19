@@ -6,13 +6,13 @@ import Motif from './Motif.astro';
 const total = String(heroSlides.length).padStart(2, '0');
 ---
 
-<section id="accueil" class="relative bg-ink text-paper" aria-roledescription="carrousel" aria-label="Présentation">
-  <div class="relative min-h-[calc(100svh-4.25rem)]">
+<section id="accueil" class="bg-ink text-paper" aria-roledescription="carrousel" aria-label="Présentation">
+  <div class="grid min-h-[calc(100svh-9rem)]">
     {
       heroSlides.map((slide, index) => (
         <article
           class:list={[
-            'absolute inset-0',
+            'col-start-1 row-start-1 h-full',
             slide.tone === 'light' ? 'bg-paper text-ink' : 'bg-ink text-paper',
           ]}
           data-hero-slide
@@ -21,7 +21,7 @@ const total = String(heroSlides.length).padStart(2, '0');
           inert={index === 0 ? undefined : true}
         >
           <div class="container-narrow flex h-full flex-col px-4 sm:flex-row sm:items-stretch sm:px-6 lg:px-8">
-            <div class="order-2 flex flex-1 flex-col justify-end pb-28 pt-6 sm:order-1 sm:py-16 sm:pr-10">
+            <div class="order-2 flex flex-1 flex-col justify-end pb-10 pt-6 sm:order-1 sm:pb-14 sm:pt-16 sm:pr-12">
               <p class="text-xs font-medium uppercase tracking-[0.28em] text-accent-red">{slide.kicker}</p>
               {index === 0 ? (
                 <h1 class="mt-4 max-w-xl font-display text-[2.7rem] leading-[0.95] sm:text-6xl lg:text-7xl">
@@ -53,8 +53,9 @@ const total = String(heroSlides.length).padStart(2, '0');
         </article>
       ))
     }
+  </div>
 
-    <div class="absolute inset-x-0 bottom-0 z-20 border-t border-paper/15 bg-ink text-paper">
+  <div class="border-t border-paper/15 bg-ink text-paper">
       <div class="container-narrow flex items-center gap-4 px-4 py-4 sm:px-6 lg:px-8">
         <p class="shrink-0 font-display text-2xl leading-none tabular-nums">
           <span data-hero-index>01</span>
@@ -81,7 +82,6 @@ const total = String(heroSlides.length).padStart(2, '0');
         </div>
       </div>
     </div>
-  </div>
 </section>
 
 <style>
