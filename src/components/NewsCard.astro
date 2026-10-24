@@ -1,6 +1,6 @@
 ---
 import type { NewsEntry } from '../lib/news';
-import { formatNewsDate, newsDateParts } from '../lib/news';
+import { formatNewsDate, getNewsDate, getNewsDescription, newsDateParts } from '../lib/news';
 
 interface Props {
   entry: NewsEntry;
@@ -9,7 +9,9 @@ interface Props {
 
 const { entry, featured = false } = Astro.props;
 const href = `/actualites/${entry.id}/`;
-const parts = newsDateParts(entry.data.pubDate);
+const date = getNewsDate(entry);
+const description = getNewsDescription(entry);
+const parts = newsDateParts(date);
 ---
 
 <article class="border-t border-ink">
@@ -20,7 +22,7 @@ const parts = newsDateParts(entry.data.pubDate);
           {entry.data.image ? (
             <img
               src={entry.data.image}
-              alt={entry.data.imageAlt ?? ''}
+              alt={entry.data.imageAlt ?? entry.data.title}
               class="absolute inset-0 h-full w-full object-cover"
               loading="lazy"
             />
@@ -42,7 +44,7 @@ const parts = newsDateParts(entry.data.pubDate);
               {entry.data.title}
             </a>
           </h3>
-          <p class="mt-4 max-w-xl text-base leading-relaxed text-muted">{entry.data.description}</p>
+          <p class="mt-4 max-w-xl text-base leading-relaxed text-muted">{description}</p>
           <a href={href} class="mt-6 inline-flex items-center gap-2 text-sm font-medium text-ink hover:text-accent-red">
             Lire la suite <span aria-hidden="true">→</span>
           </a>
@@ -51,15 +53,15 @@ const parts = newsDateParts(entry.data.pubDate);
     ) : (
       <a href={href} class="group grid gap-2 py-6 sm:grid-cols-12 sm:items-baseline sm:gap-6">
         <time
-          datetime={entry.data.pubDate.toISOString()}
+          datetime={date.toISOString()}
           class="text-sm capitalize text-muted sm:col-span-3"
         >
-          {formatNewsDate(entry.data.pubDate)}
+          {formatNewsDate(date)}
         </time>
         <h3 class="font-display text-2xl leading-tight text-ink transition-colors group-hover:text-accent-red sm:col-span-5">
           {entry.data.title}
         </h3>
-        <p class="text-sm leading-relaxed text-muted sm:col-span-4">{entry.data.description}</p>
+        <p class="text-sm leading-relaxed text-muted sm:col-span-4">{description}</p>
       </a>
     )
   }

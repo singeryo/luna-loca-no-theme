@@ -1,0 +1,43 @@
+media:
+  - name: news_images
+    label: Images d'actualités
+    input: public/images/news
+    output: /images/news
+    rename: safe
+    categories: [image]
+
+content:
+  - name: news
+    label: Actualités
+    type: collection
+    path: src/content/news
+    format: yaml-frontmatter
+    filename:
+      template: "{year}-{month}-{day}-{title}.md"
+      field: false
+    fields:
+      - name: title
+        label: Titre
+        type: string
+        required: true
+      - name: image
+        label: Image
+        type: image
+        options:
+          media: news_images
+          path: public/images/news
+          extensions: [jpg, jpeg, png, webp]
+      - name: body
+        label: Texte
+        type: rich-text
+        options:
+          format: markdown
+          media: false
+
+settings:
+  content:
+    merge: true
+  commit:
+    templates:
+      create: "Add news: {filename}"
+      update: "Update news: {filename}"

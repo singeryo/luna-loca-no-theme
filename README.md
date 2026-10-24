@@ -36,12 +36,14 @@ npm run deploy
 
 Les 5 dernières actualités s’affichent sur l’accueil. « Tout l’historique » mène à `/actualites/`.
 
-Pour l’instant le contenu vit dans `src/content/news/*.md`. Plus tard, un CMS headless pourra :
+Le contenu vit dans `src/content/news/*.md`. La configuration Pages CMS se trouve dans `.pages.yml` :
 
-1. **pousser des fichiers Markdown vers Git** (webhook → commit → rebuild Cloudflare), ou
-2. **déclencher un rebuild** après publication, avec un loader Astro qui lit l’API du CMS au build.
+- Ouvrir le dépôt sur [app.pagescms.org](https://app.pagescms.org/) et autoriser l’application GitHub Pages CMS.
+- Sélectionner la branche `main` pour publier directement sur la branche de production.
+- Créer une actualité avec un titre, une image et son texte. Les images sont stockées dans `public/images/news/`.
+- Chaque enregistrement crée ou met à jour un fichier Markdown dans `src/content/news/`. Le nom de fichier fournit la date de publication ; le site génère l’extrait des cartes depuis le texte si aucune description n’existe.
 
-Les deux approches restent compatibles avec un site 100 % statique.
+Les commits sur `main` déclenchent le déploiement Cloudflare déjà configuré pour le dépôt.
 
 ## Contact
 

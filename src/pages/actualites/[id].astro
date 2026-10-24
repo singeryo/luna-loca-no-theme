@@ -2,7 +2,7 @@
 import { render } from 'astro:content';
 import Button from '../../components/ui/Button.astro';
 import PageLayout from '../../layouts/PageLayout.astro';
-import { formatNewsDate, getPublishedNews } from '../../lib/news';
+import { formatNewsDate, getNewsDate, getNewsDescription, getPublishedNews } from '../../lib/news';
 
 export async function getStaticPaths() {
   const entries = await getPublishedNews();
@@ -14,9 +14,11 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
+const date = getNewsDate(entry);
+const description = getNewsDescription(entry);
 ---
 
-<PageLayout title={entry.data.title} description={entry.data.description}>
+<PageLayout title={entry.data.title} description={description}>
   <article class="section-pad">
     <div class="container-narrow max-w-3xl">
       <Button href="/actualites/" variant="ghost" class="mb-10">
@@ -25,22 +27,22 @@ const { Content } = await render(entry);
 
       <header class="border-b border-ink pb-8">
         <time
-          datetime={entry.data.pubDate.toISOString()}
+          datetime={date.toISOString()}
           class="text-xs font-medium uppercase tracking-[0.18em] text-accent-blue"
         >
-          {formatNewsDate(entry.data.pubDate)}
+          {formatNewsDate(date)}
         </time>
         <h1 class="mt-4 font-display text-4xl leading-[1.05] text-ink sm:text-6xl">
           {entry.data.title}
         </h1>
-        <p class="mt-5 text-lg leading-relaxed text-muted">{entry.data.description}</p>
+        {entry.data.description && <p class="mt-5 text-lg leading-relaxed text-muted">{entry.data.description}</p>}
       </header>
 
       {
         entry.data.image && (
           <img
             src={entry.data.image}
-            alt={entry.data.imageAlt ?? ''}
+            alt={entry.data.imageAlt ?? entry.data.title}
             class="mt-10 aspect-[16/9] w-full object-cover"
             loading="eager"
           />
